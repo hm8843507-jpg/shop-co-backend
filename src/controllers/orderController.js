@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const { asArray } = require('../utils/formatters');
 
@@ -37,4 +38,28 @@ async function createOrder(req, res) {
   }
 }
 
-module.exports = { listOrders, createOrder };
+async function deleteOrder(req, res) {
+  try {
+    const requestedId = req.params.id;
+    let order = null;
+
+    if (mongoose.Types.ObjectId.isValid(requestedId)) {
+      order = await Order.findByIdAndDelete(requestedId);
+    }
+
+    if (!order) {
+      order = await Order.findOneAndDelete({ order_id: requestedId });
+    }
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found for the supplied database or order ID.' });
+    }
+
+    return res.status(200).json({ message: 'Order deleted.' });
+  } catch (error) {
+    console.error('Orders DELETE error:', error);
+    return res.status(500).json({ message: 'Error deleting order.' });
+  }
+}
+
+module.exports = { listOrders, createOrder, deleteOrder };

@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.get('/', dbGuard, authRequired, adminRequired, orderController.listOrders);
 router.post('/', dbGuard, optionalAuth, orderController.createOrder);
+router.delete('/:id', dbGuard, authRequired, adminRequired, orderController.deleteOrder);
 
 module.exports = router;
